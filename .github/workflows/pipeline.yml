@@ -27,3 +27,9 @@ jobs:
           command: npm run cypress
           start: npm run start-prod
           wait-on: http://localhost:8080
+      - name: heroku deployment
+        uses: Raju/heroku-deploy@v3.12.12 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "evening-meadow-83078" #Must be unique in Heroku
+          heroku_email: "lr0073558@gmail.com"
