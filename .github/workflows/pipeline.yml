@@ -33,3 +33,4 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "evening-meadow-83078" #Must be unique in Heroku
           heroku_email: "lr0073558@gmail.com"
+          healthcheck: "https://evening-meadow-83078.herokuapp.com/health"
