@@ -35,3 +35,80 @@ jobs:
           heroku_email: "lr0073558@gmail.com"
           healthcheck: "https://evening-meadow-83078.herokuapp.com/health"
           checkstring: "ok"
+           rollbackonhealthcheckfailed: true
+
+
+       #check for test and give message on discord
+
+      
+      - name: Test Failure
+        uses: rjstone/discord-webhook-notify@v1
+        if: failure()
+        with:
+            severity: error
+            details: Test Failed!
+            avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
+            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Test Cancelled
+        uses: rjstone/discord-webhook-notify@v1
+        if: cancelled()
+        with:
+            severity: warn
+            details: Test Cancelled!
+            avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
+            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+    
+
+
+  tag-releases:
+    permissions: write-all
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-latest
+    
+    env:
+      
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      WITH_V: true
+      INITIAL_VERSION: 0.0.0
+       
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: '0'
+    # bump tags and releases
+    - name: Bump version and push tag major release
+      if : ${{contains(env.JOIN_COMMIT_MESSAGES,'#major') && !contains(env.JOIN_COMMIT_MESSAGES,'#skip')}}
+      
+      uses: anothrNick/github-tag-action@1.40.0
+      id: major
+      env:
+        DEFAULT_BUMP: major
+        JOIN_COMMIT_MESSAGES: ${{ join(github.event.commits.*.message)}}
+
+    - name: Bump version and push tag minor release
+      if : ${{contains(env.JOIN_COMMIT_MESSAGES,'#minor') && !contains(env.JOIN_COMMIT_MESSAGES,'#skip')}}
+      uses: anothrNick/github-tag-action@1.40.0
+      id : minor
+      env:
+        DEFAULT_BUMP: minor
+        JOIN_COMMIT_MESSAGES: ${{ join(github.event.commits.*.message)}}
+
+      
+    - name: Bump version and push tag patch release
+      if : ${{ steps.major.conclusion != 'success' && steps.minor.conclusion != 'success' && !contains(env.JOIN_COMMIT_MESSAGES,'#skip')}}
+      uses: anothrNick/github-tag-action@1.40.0
+      env:
+        DEFAULT_BUMP: patch
+        JOIN_COMMIT_MESSAGES: ${{ join(github.event.commits.*.message)}}
+
+    - name: Test Success
+      if: success()
+      uses: rjstone/discord-webhook-notify@v1
+      with:
+          severity: info
+          details: Test Succeeded!
+          avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
+          description: to https://fullstack-pokedex321123.herokuapp.com/ by su-de-sh
+          text: New version of Pokedox deployed!!!!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+
