@@ -35,7 +35,7 @@ jobs:
           heroku_email: "lr0073558@gmail.com"
           healthcheck: "https://evening-meadow-83078.herokuapp.com/health"
           checkstring: "ok"
-           rollbackonhealthcheckfailed: true
+          rollbackonhealthcheckfailed: true
 
 
        #check for test and give message on discord
