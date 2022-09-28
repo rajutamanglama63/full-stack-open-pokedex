@@ -108,7 +108,7 @@ jobs:
           severity: info
           details: Test Succeeded!
           avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
-          description: to https://fullstack-pokedex321123.herokuapp.com/ by su-de-sh
+          description: to https://evening-meadow-83078.herokuapp.com/ by raju
           text: New version of Pokedox deployed!!!!
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
 
